@@ -3,7 +3,7 @@ import re
 from playwright.sync_api import Playwright, sync_playwright, expect
 
 
-def run(playwright: Playwright) -> None:
+def scrap_company(playwright: Playwright, url: str) -> dict:
     browser = playwright.firefox.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
@@ -22,11 +22,15 @@ def run(playwright: Playwright) -> None:
     # ---------------------
     context.close()
     browser.close()
-    print(website)
-    print(description)
-    print(rating)
-    print(detail)
+    company = {
+    "website": website,
+    "description": description,
+    "rating": rating,
+    "details": detail
+    }
+    print(company)
+    return company
 
 
 with sync_playwright() as playwright:
-    run(playwright)
+    scrap_company(playwright, "https://www.g2.com/products/smarturl/reviews") 
