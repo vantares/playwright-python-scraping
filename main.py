@@ -2,15 +2,31 @@ import os
 import json, yaml
 
 
-from flask import Flask, after_this_request, send_file, abort, render_template, request, redirect, url_for
+from flask import Flask, after_this_request, send_file, abort, render_template, request, redirect, url_for, session
 from flask_restx import Resource, Api, fields
 from flask_restx.api import Swagger
-from werkzeug.utils import safe_join
+from werkzeug.utils import safe_join, secure_filename
+
+UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
+# Define allowed files
+ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
+# Configure upload file path flask
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/')
-def index():
+@app.route('/', methods=['GET', 'POST'])
+def uploadFile():
+    if request.method == 'POST':
+        # upload file flask
+        target=os.path.join(UPLOAD_FOLDER,'test_docs')
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        file = request.files['file'] 
+        filename = secure_filename(file.filename)
+        destination="/".join([target, filename])
+        file.save(destination)
+        return render_template('index2.html')
     return render_template('index.html')
 
 api = Api(
